@@ -1,0 +1,15 @@
+POST http://localhost:8080/api/items
+Authorization: Basic YWRtaW46Qmxhc0RlR3V6bWFuUmVsb3ZhMTIzQA==
+Content-Type: application/json
+
+{
+  "name": "Router",
+  "category": "Networking",
+  "location": "Warehouse A",
+  "quantity": 10,
+
+  "name": "Laptop",
+  "category": "Networking",
+  "location": "AJ Relova",
+  "quantity": 5
+}
