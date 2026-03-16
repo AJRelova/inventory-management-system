@@ -7,7 +7,7 @@ function setEditMsg(text) { el("editMsg").textContent = text || ""; }
 
 function buildAuth() {
     const u = el("username").value.trim();
-    const p = el("password").value; // DON'T trim password
+    const p = el("password").value;
     if (!u || !p) return null;
     return "Basic " + btoa(u + ":" + p);
 }
