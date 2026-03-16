@@ -89,10 +89,10 @@ async function loadItems() {
 async function addItem() {
     setMsg("");
 
-    const name = el("Description").value.trim();
-    const category = el("Category").value.trim();
-    const location = el("Location").value.trim();
-    const quantity = Number(el("Quantity").value);
+    const name = el("name").value.trim();
+    const category = el("category").value.trim();
+    const location = el("location").value.trim();
+    const quantity = Number(el("quantity").value);
 
     if (!name || !category || !location || Number.isNaN(quantity) || quantity < 0) {
         setMsg("Fill out all fields correctly (quantity must be 0 or more).");
@@ -104,10 +104,10 @@ async function addItem() {
         body: JSON.stringify({ name, category, location, quantity })
     });
 
-    el("Description").value = "";
-    el("Category").value = "";
-    el("Location").value = "";
-    el("Quantity").value = "";
+    el("name").value = "";
+    el("category").value = "";
+    el("location").value = "";
+    el("quantity").value = "";
 
     setMsg(`Added item #${created.id}.`);
     await loadItems();
