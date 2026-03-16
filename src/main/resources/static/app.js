@@ -90,9 +90,9 @@ async function addItem() {
     setMsg("");
 
     const name = el("Description").value.trim();
-    const category = el("category").value.trim();
-    const location = el("location").value.trim();
-    const quantity = Number(el("quantity").value);
+    const category = el("Category").value.trim();
+    const location = el("Location").value.trim();
+    const quantity = Number(el("Quantity").value);
 
     if (!name || !category || !location || Number.isNaN(quantity) || quantity < 0) {
         setMsg("Fill out all fields correctly (quantity must be 0 or more).");
