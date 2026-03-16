@@ -104,10 +104,10 @@ async function addItem() {
         body: JSON.stringify({ name, category, location, quantity })
     });
 
-    el("name").value = "";
-    el("category").value = "";
-    el("location").value = "";
-    el("quantity").value = "";
+    el("Description").value = "";
+    el("Category").value = "";
+    el("Location").value = "";
+    el("Quantity").value = "";
 
     setMsg(`Added item #${created.id}.`);
     await loadItems();
