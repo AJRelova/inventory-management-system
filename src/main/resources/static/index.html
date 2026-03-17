@@ -3,104 +3,171 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Inventory Management System</title>
+    <title>Nxtgen-Ultegra Inventory Management System</title>
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-<header class="topbar">
-    <h1><img src="logo.png" style="height:36px;">
-        <img src="logo2.png" style="height:36px;">
-    </h1>
+<div id="loginModal" class="modal">
+    <div class="modal-card login-card">
+        <div class="brand-row">
+            <img src="logo.png" alt="Logo" class="brand-logo">
+            <img src="logo2.png" alt="Logo 2" class="brand-logo">
+        </div>
+        <h2>Login</h2>
+        <p class="muted">Enter your credentials to access Nxtgen-Ultegra inventory.</p>
+        <div class="grid two-col">
+            <input id="username" placeholder="Username" />
+            <input id="password" placeholder="Password" type="password" />
+        </div>
+        <div class="row">
+            <button id="btnSaveAuth">Login</button>
+            <span id="authStatus" class="muted">Not connected</span>
+        </div>
+    </div>
+</div>
 
-    <div class="auth">
-        <input id="username" placeholder="Username" />
-        <input id="password" placeholder="Password" type="password" />
-        <button id="btnSaveAuth">LOGIN</button>
-        <span id="authStatus" class="muted">Not connected</span>
+<header class="topbar">
+    <div class="brand-row">
+        <img src="logo.png" alt="Logo" class="brand-logo">
+        <img src="logo2.png" alt="Logo 2" class="brand-logo">
+    </div>
+    <div class="topbar-right">
+        <input id="search" placeholder="Search serial number, description, category, or location..." />
+        <button id="btnExport" class="secondary">Export Excel</button>
+        <button id="btnOpenLogin" class="secondary">Login</button>
     </div>
 </header>
 
-<main class="container">
-
-    <section class="card">
+<main class="container dashboard">
+    <section class="card side-panel">
         <h2>Add Item</h2>
-
-        <div class="grid">
-            <input id="name" placeholder="Description (e.g., Router)" />
-            <input id="category" placeholder="Category (e.g., Networking)" />
-            <input id="location" placeholder="Location (e.g., Warehouse A)" />
+        <div class="grid one-col">
+            <input id="serialNumber" placeholder="Serial Number" />
+            <input id="description" placeholder="Description" />
+            <select id="category"></select>
+            <select id="location"></select>
             <input id="quantity" placeholder="Quantity" type="number" min="0" />
+            <input id="deliveryReceipt" placeholder="Delivery Receipt" />
+            <input id="hardwareRevision" placeholder="Hardware Revision" />
+            <input id="vendor" placeholder="Vendor" />
+            <input id="imageFile" type="file" accept="image/*" />
         </div>
 
-        <div class="row">
+        <div class="row wrap">
             <button id="btnAdd">Add Item</button>
             <button id="btnRefresh" class="secondary">Refresh</button>
-
             <button id="btnImport" class="secondary">Import Excel</button>
             <input type="file" id="excelFile" accept=".xlsx" />
-
-            <span id="msg" class="muted"></span>
         </div>
+        <span id="msg" class="muted block-msg"></span>
     </section>
 
-    <section class="card">
-        <div class="row space-between">
-            <h2>Items</h2>
-            <input id="search" placeholder="Search name/category/location..." />
-        </div>
+    <section class="content-panel">
+        <section class="card">
+            <div class="row space-between wrap">
+                <h2>Items</h2>
+                <span class="muted">Columns: Serial Number, Description, Category, Location, Quantity, Actions</span>
+            </div>
 
-        <table>
-            <thead>
-            <tr>
-                <th style="width:80px;">Serial Number</th>
-                <th>Description</th>
-                <th>Category</th>
-                <th>Location</th>
-                <th style="width:110px;">Quantity</th>
-                <th style="width:220px;">Actions</th>
-            </tr>
-            </thead>
-            <tbody id="itemsBody"></tbody>
-        </table>
+            <div class="table-wrap">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Serial Number</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Location</th>
+                        <th>Quantity</th>
+                        <th>Last Edited By</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="itemsBody"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="card">
+            <div class="row space-between wrap">
+                <h2>Inventory History</h2>
+                <button id="refreshHistoryBtn" class="secondary">Refresh History</button>
+            </div>
+
+            <table id="historyTable">
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Item</th>
+                    <th>Action</th>
+                    <th>Qty Change</th>
+                </tr>
+                </thead>
+                <tbody id="historyBody"></tbody>
+            </table>
+        </section>
     </section>
-
-    <section class="card">
-        <div class="row space-between">
-            <h2>Inventory History</h2>
-            <button id="refreshHistoryBtn" class="secondary">Refresh History</button>
-        </div>
-
-        <table id="historyTable">
-            <thead>
-            <tr>
-                <th>Date</th>
-                <th>Item</th>
-                <th>Action</th>
-                <th>Qty Change</th>
-            </tr>
-            </thead>
-            <tbody id="historyBody"></tbody>
-        </table>
-    </section>
-
 </main>
 
 <div id="modal" class="modal hidden">
-    <div class="modal-card">
+    <div class="modal-card wide-modal">
         <h3>Edit Item</h3>
 
-        <div class="grid">
+        <div class="grid two-col">
             <input id="editId" placeholder="ID" disabled />
-            <input id="editName" placeholder="Name" />
-            <input id="editCategory" placeholder="Category" />
-            <input id="editLocation" placeholder="Location" />
+            <input id="editSerialNumber" placeholder="Serial Number" />
+            <input id="editDescription" placeholder="Description" />
+            <select id="editCategory"></select>
+            <select id="editLocation"></select>
             <input id="editQuantity" placeholder="Quantity" type="number" min="0" />
+            <input id="editDeliveryReceipt" placeholder="Delivery Receipt" />
+            <input id="editHardwareRevision" placeholder="Hardware Revision" />
+            <input id="editVendor" placeholder="Vendor" />
+            <input id="editImageFile" type="file" accept="image/*" />
         </div>
 
-        <div class="row">
+        <div class="row wrap">
             <button id="btnSaveEdit">Save</button>
             <button id="btnCancelEdit" class="secondary">Cancel</button>
             <span id="editMsg" class="muted"></span>
+        </div>
+    </div>
+</div>
+
+<div id="detailsModal" class="modal hidden">
+    <div class="modal-card wide-modal">
+        <div class="row space-between wrap">
+            <h3 id="detailsTitle">Item Details</h3>
+            <button id="btnCloseDetails" class="secondary">Close</button>
+        </div>
+
+        <div class="details-grid">
+            <div class="detail-box"><strong>Delivery Receipt</strong><span id="detailDeliveryReceipt"></span></div>
+            <div class="detail-box"><strong>Hardware Revision</strong><span id="detailHardwareRevision"></span></div>
+            <div class="detail-box"><strong>Vendor</strong><span id="detailVendor"></span></div>
+            <div class="detail-box"><strong>Last Edited By</strong><span id="detailLastEditedBy"></span></div>
+        </div>
+
+        <div class="detail-box top-gap">
+            <strong>Uploaded Image</strong>
+            <img id="detailImage" class="detail-image hidden" alt="Item image" />
+            <span id="detailNoImage" class="muted">No image uploaded.</span>
+        </div>
+
+        <div class="detail-box top-gap">
+            <div class="row space-between wrap">
+                <strong>Inventory History</strong>
+                <button id="btnLoadItemHistory" class="secondary">Refresh This Item History</button>
+            </div>
+            <table>
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Action</th>
+                    <th>Qty Change</th>
+                </tr>
+                </thead>
+                <tbody id="itemHistoryBody"></tbody>
+            </table>
         </div>
     </div>
 </div>

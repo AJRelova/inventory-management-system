@@ -4,6 +4,8 @@ import com.nxtgen.inventorymanagementsystem.entity.InventoryHistory;
 import com.nxtgen.inventorymanagementsystem.entity.Item;
 import com.nxtgen.inventorymanagementsystem.repository.InventoryHistoryRepository;
 import com.nxtgen.inventorymanagementsystem.repository.ItemRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,16 +26,9 @@ public class ItemService {
     }
 
     public Item saveItem(Item item) {
+        item.setLastEditedBy(currentUsername());
         Item saved = itemRepository.save(item);
-
-        historyRepository.save(
-                new InventoryHistory(
-                        saved.getId(),
-                        saved.getName(),
-                        "ADD",
-                        saved.getQuantity()
-                )
-        );
+        recordHistory(saved, "ADD", saved.getQuantity());
         return saved;
     }
 
@@ -45,22 +40,19 @@ public class ItemService {
         int newQty = updated.getQuantity();
         int change = newQty - oldQty;
 
-        existing.setName(updated.getName());
+        existing.setSerialNumber(updated.getSerialNumber());
+        existing.setDescription(updated.getDescription());
         existing.setCategory(updated.getCategory());
         existing.setLocation(updated.getLocation());
         existing.setQuantity(newQty);
+        existing.setDeliveryReceipt(updated.getDeliveryReceipt());
+        existing.setHardwareRevision(updated.getHardwareRevision());
+        existing.setVendor(updated.getVendor());
+        existing.setImageData(updated.getImageData());
+        existing.setLastEditedBy(currentUsername());
 
         Item saved = itemRepository.save(existing);
-
-        historyRepository.save(
-                new InventoryHistory(
-                        saved.getId(),
-                        saved.getName(),
-                        "UPDATE",
-                        change
-                )
-        );
-
+        recordHistory(saved, "UPDATE", change);
         return saved;
     }
 
@@ -68,15 +60,21 @@ public class ItemService {
         Item item = itemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Item not found: " + id));
 
-        historyRepository.save(
-                new InventoryHistory(
-                        item.getId(),
-                        item.getName(),
-                        "DELETE",
-                        -item.getQuantity()
-                )
-        );
-
+        recordHistory(item, "DELETE", -item.getQuantity());
         itemRepository.deleteById(id);
+    }
+
+    private void recordHistory(Item item, String action, Integer quantityChange) {
+        historyRepository.save(new InventoryHistory(
+                item.getId(),
+                item.getDescription() != null && !item.getDescription().isBlank() ? item.getDescription() : item.getSerialNumber(),
+                action,
+                quantityChange
+        ));
+    }
+
+    private String currentUsername() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        return auth != null ? auth.getName() : "unknown";
     }
 }
