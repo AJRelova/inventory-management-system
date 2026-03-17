@@ -347,7 +347,6 @@ populateSelect("editCategory", CATEGORY_OPTIONS);
 populateSelect("editLocation", LOCATION_OPTIONS);
 
 el("btnSaveAuth").onclick = login;
-el("btnOpenLogin").onclick = () => el("loginModal").classList.remove("hidden");
 el("btnAdd").onclick = () => addItem().catch((e) => setMsg(e.message));
 el("btnRefresh").onclick = () => loadItems().catch((e) => setMsg(e.message));
 el("search").oninput = () => renderItems(allItems);

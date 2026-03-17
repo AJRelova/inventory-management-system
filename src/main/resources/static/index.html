@@ -138,34 +138,87 @@
             <button id="btnCloseDetails" class="secondary">Close</button>
         </div>
 
-        <div class="details-grid">
-            <div class="detail-box"><strong>Delivery Receipt</strong><span id="detailDeliveryReceipt"></span></div>
-            <div class="detail-box"><strong>Hardware Revision</strong><span id="detailHardwareRevision"></span></div>
-            <div class="detail-box"><strong>Vendor</strong><span id="detailVendor"></span></div>
-            <div class="detail-box"><strong>Last Edited By</strong><span id="detailLastEditedBy"></span></div>
-        </div>
+        <div class="accordion">
 
-        <div class="detail-box top-gap">
-            <strong>Uploaded Image</strong>
-            <img id="detailImage" class="detail-image hidden" alt="Item image" />
-            <span id="detailNoImage" class="muted">No image uploaded.</span>
-        </div>
-
-        <div class="detail-box top-gap">
-            <div class="row space-between wrap">
-                <strong>Inventory History</strong>
-                <button id="btnLoadItemHistory" class="secondary">Refresh This Item History</button>
+            <div class="accordion-item">
+                <button class="accordion-header" type="button" data-target="sectionDeliveryReceipt">
+                    <span>Delivery Receipt</span>
+                    <span class="caret">⌄</span>
+                </button>
+                <div id="sectionDeliveryReceipt" class="accordion-content hidden">
+                    <div class="detail-box">
+                        <span id="detailDeliveryReceipt"></span>
+                    </div>
+                </div>
             </div>
-            <table>
-                <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Action</th>
-                    <th>Qty Change</th>
-                </tr>
-                </thead>
-                <tbody id="itemHistoryBody"></tbody>
-            </table>
+
+            <div class="accordion-item">
+                <button class="accordion-header" type="button" data-target="sectionHardwareRevision">
+                    <span>Hardware Revision</span>
+                    <span class="caret">⌄</span>
+                </button>
+                <div id="sectionHardwareRevision" class="accordion-content hidden">
+                    <div class="detail-box">
+                        <span id="detailHardwareRevision"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" type="button" data-target="sectionVendor">
+                    <span>Vendor</span>
+                    <span class="caret">⌄</span>
+                </button>
+                <div id="sectionVendor" class="accordion-content hidden">
+                    <div class="detail-box">
+                        <span id="detailVendor"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" type="button" data-target="sectionHistory">
+                    <span>Inventory History</span>
+                    <span class="caret">⌄</span>
+                </button>
+                <div id="sectionHistory" class="accordion-content hidden">
+                    <div class="detail-box">
+                        <div class="row space-between wrap">
+                            <strong>History Records</strong>
+                            <button id="btnLoadItemHistory" class="secondary">Refresh This Item History</button>
+                        </div>
+                        <table>
+                            <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Action</th>
+                                <th>Qty Change</th>
+                            </tr>
+                            </thead>
+                            <tbody id="itemHistoryBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <button class="accordion-header" type="button" data-target="sectionUploadImage">
+                    <span>Upload Image</span>
+                    <span class="caret">⌄</span>
+                </button>
+                <div id="sectionUploadImage" class="accordion-content hidden">
+                    <div class="detail-box">
+                        <input id="detailImageUpload" type="file" accept="image/*" />
+                        <div class="row wrap">
+                            <button id="btnSaveDetailImage">Save Image</button>
+                        </div>
+
+                        <img id="detailImage" class="detail-image hidden" alt="Item image" />
+                        <span id="detailNoImage" class="muted">No image uploaded.</span>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>
