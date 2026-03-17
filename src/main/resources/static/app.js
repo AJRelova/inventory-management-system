@@ -2,8 +2,8 @@ let authHeader = null;
 let allItems = [];
 let selectedItem = null;
 
-const CATEGORY_OPTIONS = ["Select Category", "Networking", "Servers", "Peripherals", "Storage", "Cabling", "Power", "Accessories"];
-const LOCATION_OPTIONS = ["Select Location", "Warehouse A", "Warehouse B", "Main Office", "Server Room", "Lab 1", "Lab 2"];
+const CATEGORY_OPTIONS = ["Select Category", "Networking", "Laptop", "Smartphone", "Sim ", "Peripherals", "Accessories"];
+const LOCATION_OPTIONS = ["Select Location", "Batangas SH", "Office", "N/A"];
 
 const el = (id) => document.getElementById(id);
 
