@@ -56,27 +56,49 @@ function buildActionDropdown(it) {
     const wrapper = document.createElement("div");
     wrapper.className = "action-menu";
 
-    const select = document.createElement("select");
-    select.className = "action-select";
-    select.innerHTML = `
-      <option value="">Actions</option>
-      <option value="details">Delivery Receipt</option>
-      <option value="hardware">Hardware Revision</option>
-      <option value="vendor">Vendor</option>
-      <option value="history">Inventory History</option>
-      <option value="image">Upload Image</option>
-    `;
+    const menuContainer = document.createElement("div");
+    menuContainer.className = "action-dropdown";
 
-    select.onchange = () => {
-        if (!select.value) return;
-        openDetails(it);
-        if (select.value === "image") {
-            el("detailsTitle").textContent = `Upload Image - ${it.serialNumber}`;
-        }
-        select.value = "";
+    const toggleBtn = document.createElement("button");
+    toggleBtn.type = "button";
+    toggleBtn.className = "action-toggle secondary";
+    toggleBtn.innerHTML = `Actions <span class="caret-small">⌄</span>`;
+
+    const menu = document.createElement("div");
+    menu.className = "action-dropdown-menu hidden";
+
+    const options = [
+        { label: "Delivery Receipt", action: () => openDetailsSection(it, "sectionDeliveryReceipt") },
+        { label: "Hardware Revision", action: () => openDetailsSection(it, "sectionHardwareRevision") },
+        { label: "Vendor", action: () => openDetailsSection(it, "sectionVendor") },
+        { label: "Inventory History", action: () => openDetailsSection(it, "sectionHistory") },
+        { label: "Upload Image", action: () => openDetailsSection(it, "sectionUploadImage") }
+    ];
+
+    options.forEach((opt) => {
+        const item = document.createElement("button");
+        item.type = "button";
+        item.className = "action-dropdown-item";
+        item.textContent = opt.label;
+        item.onclick = () => {
+            menu.classList.add("hidden");
+            opt.action();
+        };
+        menu.appendChild(item);
+    });
+
+    toggleBtn.onclick = (e) => {
+        e.stopPropagation();
+        document.querySelectorAll(".action-dropdown-menu").forEach((m) => {
+            if (m !== menu) m.classList.add("hidden");
+        });
+        menu.classList.toggle("hidden");
     };
 
-    wrapper.appendChild(select);
+    menuContainer.appendChild(toggleBtn);
+    menuContainer.appendChild(menu);
+
+    wrapper.appendChild(menuContainer);
     wrapper.appendChild(rowButton("Edit", "secondary", () => openEdit(it)));
     wrapper.appendChild(rowButton("Delete", "secondary", async () => {
         if (!confirm(`Delete item ${it.serialNumber}?`)) return;
@@ -302,6 +324,28 @@ async function openDetails(it) {
     el("detailsModal").classList.remove("hidden");
 }
 
+async function openDetailsSection(it, sectionId) {
+    await openDetails(it);
+
+    document.querySelectorAll(".accordion-content").forEach((section) => {
+        section.classList.add("hidden");
+    });
+
+    document.querySelectorAll(".accordion-header").forEach((header) => {
+        header.classList.remove("active");
+    });
+
+    const section = document.getElementById(sectionId);
+    if (section) {
+        section.classList.remove("hidden");
+    }
+
+    const header = document.querySelector(`.accordion-header[data-target="${sectionId}"]`);
+    if (header) {
+        header.classList.add("active");
+    }
+}
+
 async function loadItemHistory(itemId) {
     const historyList = await apiFetch(`/api/history/item/${itemId}`, { method: "GET" });
     renderHistory(historyList, el("itemHistoryBody"), false);
@@ -438,4 +482,9 @@ document.addEventListener("keydown", (e) => {
     }
 })
 
+document.addEventListener("click", () => {
+    document.querySelectorAll(".action-dropdown-menu").forEach((menu) => {
+        menu.classList.add("hidden");
+    });
+});
 setupAccordions();
