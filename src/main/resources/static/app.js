@@ -370,6 +370,48 @@ function setupAccordions() {
     });
 }
 
+async function saveDetailImage() {
+    if (!selectedItem) {
+        setMsg("No item selected.");
+        return;
+    }
+
+    const file = el("detailImageUpload").files[0];
+    if (!file) {
+        setMsg("Choose an image first.");
+        return;
+    }
+
+    const imageData = await fileToDataUrl(file);
+
+    const payload = {
+        serialNumber: selectedItem.serialNumber || "",
+        description: selectedItem.description || "",
+        category: selectedItem.category || "",
+        location: selectedItem.location || "",
+        quantity: selectedItem.quantity ?? 0,
+        deliveryReceipt: selectedItem.deliveryReceipt || "",
+        hardwareRevision: selectedItem.hardwareRevision || "",
+        vendor: selectedItem.vendor || "",
+        imageData: imageData
+    };
+
+    const updated = await apiFetch(`/api/items/${selectedItem.id}`, {
+        method: "PUT",
+        body: JSON.stringify(payload)
+    });
+
+    selectedItem = updated;
+
+    el("detailImage").src = updated.imageData || "";
+    el("detailImage").classList.remove("hidden");
+    el("detailNoImage").classList.add("hidden");
+    el("detailImageUpload").value = "";
+
+    setMsg("Image uploaded successfully.");
+    await loadItems();
+}
+
 populateSelect("category", CATEGORY_OPTIONS);
 populateSelect("location", LOCATION_OPTIONS);
 populateSelect("editCategory", CATEGORY_OPTIONS);
@@ -386,6 +428,7 @@ el("btnExport").onclick = () => exportExcel().catch((e) => setMsg(e.message));
 el("refreshHistoryBtn").onclick = () => fetchHistory().catch((e) => setMsg(e.message));
 el("btnCloseDetails").onclick = closeDetails;
 el("btnLoadItemHistory").onclick = () => selectedItem && loadItemHistory(selectedItem.id).catch((e) => setMsg(e.message));
+el("btnSaveDetailImage").onclick = () => saveDetailImage().catch((e) => setMsg(e.message));
 
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
