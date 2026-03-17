@@ -19,6 +19,13 @@ body { margin: 0; background: #f6f7fb; color: #111; }
     height: 45px;
     width: auto;
 }
+.login-card .brand-logo {
+    height: 60px;
+}
+.login-logos {
+    justify-content: center;
+    margin-bottom: 10px;
+}
 .topbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
 .container { max-width: 1380px; margin: 18px auto; padding: 0 16px 24px; }
