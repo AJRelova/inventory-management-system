@@ -319,17 +319,22 @@ function escapeHtml(str) {
 async function login() {
     try {
         authHeader = buildAuth();
+
         if (!authHeader) {
             el("authStatus").textContent = "Enter username and password first.";
             return;
         }
 
         await apiFetch("/api/items", { method: "GET" });
+
         el("authStatus").textContent = "Connected";
-        el("loginModal").classList.add("hidden");
+
+        // CLOSE LOGIN MODAL
+        document.getElementById("loginModal").style.display = "none";
 
         await loadItems();
         await fetchHistory();
+
     } catch (e) {
         el("authStatus").textContent = "Authentication failed";
         setMsg(e.message);

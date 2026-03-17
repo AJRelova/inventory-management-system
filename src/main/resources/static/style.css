@@ -15,7 +15,10 @@ body { margin: 0; background: #f6f7fb; color: #111; }
 }
 
 .brand-row { display: flex; align-items: center; gap: 10px; }
-.brand-logo { height: 38px; object-fit: contain; }
+.brand-logo {
+    height: 45px;
+    width: auto;
+}
 .topbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 
 .container { max-width: 1380px; margin: 18px auto; padding: 0 16px 24px; }
