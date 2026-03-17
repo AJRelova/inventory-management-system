@@ -271,14 +271,15 @@ function renderHistory(historyList, tbody, showItemName = false) {
 
 async function openDetails(it) {
     selectedItem = it;
+
     el("detailsTitle").textContent = `Item Details - ${it.serialNumber || ""}`;
     el("detailDeliveryReceipt").textContent = it.deliveryReceipt || "-";
     el("detailHardwareRevision").textContent = it.hardwareRevision || "-";
     el("detailVendor").textContent = it.vendor || "-";
-    el("detailLastEditedBy").textContent = it.lastEditedBy || "-";
 
     const image = el("detailImage");
     const noImage = el("detailNoImage");
+
     if (it.imageData) {
         image.src = it.imageData;
         image.classList.remove("hidden");
@@ -288,6 +289,14 @@ async function openDetails(it) {
         image.classList.add("hidden");
         noImage.classList.remove("hidden");
     }
+
+    document.querySelectorAll(".accordion-content").forEach((section) => {
+        section.classList.add("hidden");
+    });
+
+    document.querySelectorAll(".accordion-header").forEach((header) => {
+        header.classList.remove("active");
+    });
 
     await loadItemHistory(it.id);
     el("detailsModal").classList.remove("hidden");
@@ -341,6 +350,26 @@ async function login() {
     }
 }
 
+function setupAccordions() {
+    document.querySelectorAll(".accordion-header").forEach((btn) => {
+        btn.onclick = () => {
+            const targetId = btn.dataset.target;
+            const content = document.getElementById(targetId);
+            if (!content) return;
+
+            const isHidden = content.classList.contains("hidden");
+
+            if (isHidden) {
+                content.classList.remove("hidden");
+                btn.classList.add("active");
+            } else {
+                content.classList.add("hidden");
+                btn.classList.remove("active");
+            }
+        };
+    });
+}
+
 populateSelect("category", CATEGORY_OPTIONS);
 populateSelect("location", LOCATION_OPTIONS);
 populateSelect("editCategory", CATEGORY_OPTIONS);
@@ -364,4 +393,6 @@ document.addEventListener("keydown", (e) => {
         closeDetails();
         el("loginModal").classList.add("hidden");
     }
-});
+})
+
+setupAccordions();

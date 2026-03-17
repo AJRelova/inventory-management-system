@@ -126,3 +126,49 @@ action-menu {}
     .two-col, .details-grid { grid-template-columns: 1fr; }
     #search { width: 100%; }
 }
+
+.accordion {
+    display: grid;
+    gap: 12px;
+    margin-top: 14px;
+}
+
+.accordion-item {
+    border: 1px solid #dfe6f2;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.accordion-header {
+    width: 100%;
+    background: #f7faff;
+    color: #111;
+    border: none;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.accordion-header:hover {
+    background: #eef4ff;
+}
+
+.accordion-content {
+    padding: 14px 16px;
+    border-top: 1px solid #e8edf7;
+    background: #fff;
+}
+
+.caret {
+    font-size: 18px;
+    transition: transform 0.2s ease;
+}
+
+.accordion-header.active .caret {
+    transform: rotate(180deg);
+}
