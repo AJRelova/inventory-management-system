@@ -486,5 +486,14 @@ document.addEventListener("click", () => {
     document.querySelectorAll(".action-dropdown-menu").forEach((menu) => {
         menu.classList.add("hidden");
     });
+
+const menuBtn = document.getElementById("menuToggle");
+const sidePanel = document.getElementById("sidepanel");
+
+//added for sidepanel
+menuBtn.addEventListener("click", () => {
+    sidePanel.classList.toggle("hidden");
+})
+
 });
 setupAccordions();

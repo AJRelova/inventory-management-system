@@ -14,6 +14,34 @@ body { margin: 0; background: #f6f7fb; color: #111; }
     z-index: 5;
 }
 
+/* Hamburger button */
+.menu-btn {
+    font-size: 22px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    margin-right: 15px;
+}
+
+/* Hide side panel by default */
+.side-panel {
+    transition: transform 0.3s ease;
+}
+
+/* Hidden state */
+.side-panel.hidden {
+    transform: translateX(-110%);
+    position: absolute;
+    z-index: 1000;
+}
+
+/* Optional: floating panel style */
+.side-panel {
+    background: white;
+    width: 300px;
+}
+
 .brand-row { display: flex; align-items: center; gap: 10px; }
 .brand-logo {
     height: 45px;
