@@ -106,7 +106,6 @@ function buildActionDropdown(it) {
             await apiFetch(`/api/items/${it.id}`, { method: "DELETE" });
             setMsg("Deleted.");
             await loadItems();
-            await fetchHistory();
         } catch (e) {
             setMsg(e.message);
         }
@@ -192,7 +191,6 @@ async function addItem() {
 
     setMsg(`Added item ${created.serialNumber}.`);
     await loadItems();
-    await fetchHistory();
 }
 
 function openEdit(it) {
@@ -244,7 +242,6 @@ async function saveEdit() {
     const updated = await apiFetch(`/api/items/${id}`, { method: "PUT", body: JSON.stringify(payload) });
     setEditMsg(`Saved item ${updated.serialNumber}.`);
     await loadItems();
-    await fetchHistory();
     setTimeout(closeEdit, 350);
 }
 
@@ -259,7 +256,6 @@ async function importExcel() {
         const data = await apiFetch("/api/import/excel", { method: "POST", body: form });
         setMsg(`Import done: inserted=${data.inserted}, updated=${data.updated}, errors=${data.errors?.length ?? 0}`);
         await loadItems();
-        await fetchHistory();
     } catch (e) {
         setMsg(e.message);
     }
@@ -277,11 +273,6 @@ async function exportExcel() {
     } catch (e) {
         setMsg(e.message);
     }
-}
-
-async function fetchHistory() {
-    const historyList = await apiFetch("/api/history", { method: "GET" });
-    renderHistory(historyList, el("historyBody"), true);
 }
 
 function renderHistory(historyList, tbody, showItemName = false) {
@@ -391,7 +382,6 @@ async function login() {
         el("loginModal").style.display = "none";
 
         await loadItems();
-        await fetchHistory();
 
     } catch (e) {
         el("authStatus").textContent = "Authentication failed";
@@ -474,7 +464,6 @@ el("btnCancelEdit").onclick = closeEdit;
 el("btnSaveEdit").onclick = () => saveEdit().catch((e) => setEditMsg(e.message));
 el("btnImport").onclick = () => importExcel().catch((e) => setMsg(e.message));
 el("btnExport").onclick = () => exportExcel().catch((e) => setMsg(e.message));
-el("refreshHistoryBtn").onclick = () => fetchHistory().catch((e) => setMsg(e.message));
 el("btnCloseDetails").onclick = closeDetails;
 el("btnLoadItemHistory").onclick = () => selectedItem && loadItemHistory(selectedItem.id).catch((e) => setMsg(e.message));
 el("btnSaveDetailImage").onclick = () => saveDetailImage().catch((e) => setMsg(e.message));
