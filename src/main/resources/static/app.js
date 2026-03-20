@@ -509,11 +509,23 @@ document.addEventListener("click", () => {
 
 const menuBtn = document.getElementById("menuToggle");
 const sidePanel = document.getElementById("sidePanel");
+const dashboard = document.querySelector(".dashboard");
 
-if (menuBtn && sidePanel) {
+if (menuBtn && sidePanel && dashboard) {
+    if (!sidePanel.classList.contains("hidden")) {
+        dashboard.classList.add("with-panel");
+    }
+
     menuBtn.addEventListener("click", function (e) {
         e.stopPropagation();
+
         sidePanel.classList.toggle("hidden");
+
+        if (sidePanel.classList.contains("hidden")) {
+            dashboard.classList.remove("with-panel");
+        } else {
+            dashboard.classList.add("with-panel");
+        }
     });
 }
 
