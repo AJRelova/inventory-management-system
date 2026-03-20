@@ -210,8 +210,13 @@ function openEdit(it) {
     el("modal").classList.remove("hidden");
 }
 
-function closeEdit() { el("modal").classList.add("hidden"); }
-function closeDetails() { el("detailsModal").classList.add("hidden"); }
+function closeEdit() {
+    el("modal").classList.add("hidden");
+}
+
+function closeDetails() {
+    el("detailsModal").classList.add("hidden");
+}
 
 async function saveEdit() {
     const id = el("editId").value;
@@ -351,7 +356,9 @@ async function loadItemHistory(itemId) {
     renderHistory(historyList, el("itemHistoryBody"), false);
 }
 
-function formatQty(qty) { return qty > 0 ? `+${qty}` : `${qty ?? 0}`; }
+function formatQty(qty) {
+    return qty > 0 ? `+${qty}` : `${qty ?? 0}`;
+}
 
 function formatDateTime(value) {
     if (!value) return "";
@@ -381,9 +388,7 @@ async function login() {
         await apiFetch("/api/items", { method: "GET" });
 
         el("authStatus").textContent = "Connected";
-
-        // CLOSE LOGIN MODAL
-        document.getElementById("loginModal").style.display = "none";
+        el("loginModal").style.display = "none";
 
         await loadItems();
         await fetchHistory();
@@ -474,26 +479,42 @@ el("btnCloseDetails").onclick = closeDetails;
 el("btnLoadItemHistory").onclick = () => selectedItem && loadItemHistory(selectedItem.id).catch((e) => setMsg(e.message));
 el("btnSaveDetailImage").onclick = () => saveDetailImage().catch((e) => setMsg(e.message));
 
+el("username").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        el("password").focus();
+    }
+});
+
+el("password").addEventListener("keydown", function (e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        login();
+    }
+});
+
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
         closeEdit();
         closeDetails();
         el("loginModal").classList.add("hidden");
     }
-})
+});
 
 document.addEventListener("click", () => {
     document.querySelectorAll(".action-dropdown-menu").forEach((menu) => {
         menu.classList.add("hidden");
     });
+});
 
 const menuBtn = document.getElementById("menuToggle");
-const sidePanel = document.getElementById("sidepanel");
+const sidePanel = document.getElementById("sidePanel");
 
-//added for sidepanel
-menuBtn.addEventListener("click", () => {
-    sidePanel.classList.toggle("hidden");
-})
+if (menuBtn && sidePanel) {
+    menuBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        sidePanel.classList.toggle("hidden");
+    });
+}
 
-});
 setupAccordions();

@@ -16,8 +16,8 @@ body { margin: 0; background: #f6f7fb; color: #111; }
 
 /* Hamburger button */
 .menu-btn {
-    font-size: 22px;
-    background: none;
+    font-size: 24px;
+    background: transparent;
     border: none;
     color: white;
     cursor: pointer;
@@ -26,14 +26,14 @@ body { margin: 0; background: #f6f7fb; color: #111; }
 
 /* Hide side panel by default */
 .side-panel {
+    width: 320px;
+    background: white;
     transition: transform 0.3s ease;
 }
 
 /* Hidden state */
 .side-panel.hidden {
-    transform: translateX(-110%);
-    position: absolute;
-    z-index: 1000;
+    display: none;
 }
 
 /* Optional: floating panel style */
