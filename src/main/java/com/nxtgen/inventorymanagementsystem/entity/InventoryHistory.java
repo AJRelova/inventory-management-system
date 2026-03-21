@@ -23,6 +23,19 @@ public class InventoryHistory {
     @Column(name = "quantity_change")
     private Integer quantityChange;
 
+    // 🔥 NEW: WHO DID IT
+    @Column(name = "edited_by")
+    private String editedBy;
+
+    // 🔥 NEW: NOTES / DESCRIPTION
+    @Column(name = "notes")
+    private String notes;
+
+    // 🔥 NEW: RECEIPT IMAGE (Base64)
+    @Lob
+    @Column(name = "receipt_image", columnDefinition = "LONGTEXT")
+    private String receiptImageData;
+
     @Column(name = "created_at", insertable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -34,6 +47,8 @@ public class InventoryHistory {
         this.action = action;
         this.quantityChange = quantityChange;
     }
+
+    // ===== GETTERS & SETTERS =====
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -49,6 +64,15 @@ public class InventoryHistory {
 
     public Integer getQuantityChange() { return quantityChange; }
     public void setQuantityChange(Integer quantityChange) { this.quantityChange = quantityChange; }
+
+    public String getEditedBy() { return editedBy; }
+    public void setEditedBy(String editedBy) { this.editedBy = editedBy; }
+
+    public String getNotes() { return notes; }
+    public void setNotes(String notes) { this.notes = notes; }
+
+    public String getReceiptImageData() { return receiptImageData; }
+    public void setReceiptImageData(String receiptImageData) { this.receiptImageData = receiptImageData; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
