@@ -19,7 +19,9 @@ function buildAuth() {
 
 function populateSelect(id, options) {
     const select = el(id);
-    select.innerHTML = options.map((opt, index) => `<option value="${index === 0 ? "" : escapeHtml(opt)}">${escapeHtml(opt)}</option>`).join("");
+    select.innerHTML = options.map((opt, index) =>
+        `<option value="${index === 0 ? "" : escapeHtml(opt)}">${escapeHtml(opt)}</option>`
+    ).join("");
 }
 
 async function apiFetch(path, options = {}) {
@@ -52,11 +54,23 @@ function rowButton(label, cls, onClick) {
     return btn;
 }
 
+function toggleHistoryEmpty(show, message = "No inventory history available yet.") {
+    const emptyEl = el("itemHistoryEmpty");
+    if (!emptyEl) return;
+
+    emptyEl.textContent = message;
+    if (show) {
+        emptyEl.classList.remove("hidden");
+    } else {
+        emptyEl.classList.add("hidden");
+    }
+}
+
 function renderInlineItemHistory(historyList, container) {
     container.innerHTML = "";
 
     if (!historyList || historyList.length === 0) {
-        container.innerHTML = `<div class="history-empty">No history found for this item.</div>`;
+        container.innerHTML = `<div class="history-empty">No inventory history available yet.</div>`;
         return;
     }
 
@@ -105,7 +119,6 @@ function buildActionDropdown(it) {
     historyPanel.addEventListener("click", (e) => e.stopPropagation());
 
     const options = [
-        // 🔹 TOP ACTIONS
         { label: "Edit", action: () => openEdit(it) },
         {
             label: "Delete",
@@ -120,8 +133,6 @@ function buildActionDropdown(it) {
                 }
             }
         },
-
-        // 🔹 EXISTING OPTIONS (UNCHANGED)
         { label: "Delivery Receipt", action: () => openDetailsSection(it, "sectionDeliveryReceipt") },
         { label: "Hardware Revision", action: () => openDetailsSection(it, "sectionHardwareRevision") },
         { label: "Vendor", action: () => openDetailsSection(it, "sectionVendor") },
@@ -153,7 +164,7 @@ function buildActionDropdown(it) {
                     const historyList = await apiFetch(`/api/history/item/${it.id}`, { method: "GET" });
                     renderInlineItemHistory(historyList, historyPanel);
                 } catch (e) {
-                    historyPanel.innerHTML = `<div class="history-error">${escapeHtml(e.message)}</div>`;
+                    historyPanel.innerHTML = `<div class="history-empty">Unable to load history right now.</div>`;
                 }
             }
         },
@@ -161,7 +172,6 @@ function buildActionDropdown(it) {
         { label: "Upload Image", action: () => openDetailsSection(it, "sectionUploadImage") }
     ];
 
-    // 🔹 Build menu items
     options.forEach((opt) => {
         const item = document.createElement("button");
         item.type = "button";
@@ -175,7 +185,6 @@ function buildActionDropdown(it) {
         menu.appendChild(item);
     });
 
-    // 🔹 Toggle menu
     toggleBtn.onclick = (e) => {
         e.stopPropagation();
         document.querySelectorAll(".action-dropdown-menu").forEach((m) => {
@@ -343,10 +352,8 @@ async function importExcel() {
         await loadItems();
 
     } catch (e) {
-        console.error(e); // keep for debugging
-
-
-        setMsg("");  // <- this hides the error
+        console.error(e);
+        setMsg("");
     }
 }
 
@@ -366,7 +373,15 @@ async function exportExcel() {
 
 function renderHistory(historyList, tbody, showItemName = false) {
     tbody.innerHTML = "";
+
+    if (!historyList || historyList.length === 0) {
+        toggleHistoryEmpty(true, "No inventory history available yet.");
+        return;
+    }
+
+    toggleHistoryEmpty(false);
     historyList.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+
     for (const h of historyList) {
         const tr = document.createElement("tr");
         tr.innerHTML = showItemName
@@ -396,6 +411,10 @@ async function openDetails(it) {
         image.classList.add("hidden");
         noImage.classList.remove("hidden");
     }
+
+    const historyBody = el("itemHistoryBody");
+    if (historyBody) historyBody.innerHTML = "";
+    toggleHistoryEmpty(false);
 
     document.querySelectorAll(".accordion-content").forEach((section) => {
         section.classList.add("hidden");
@@ -432,8 +451,22 @@ async function openDetailsSection(it, sectionId) {
 }
 
 async function loadItemHistory(itemId) {
-    const historyList = await apiFetch(`/api/history/item/${itemId}`, { method: "GET" });
-    renderHistory(historyList, el("itemHistoryBody"), false);
+    const tbody = el("itemHistoryBody");
+    if (tbody) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="3" class="muted">Loading history...</td>
+            </tr>
+        `;
+    }
+
+    try {
+        const historyList = await apiFetch(`/api/history/item/${itemId}`, { method: "GET" });
+        renderHistory(historyList, el("itemHistoryBody"), false);
+    } catch (e) {
+        if (tbody) tbody.innerHTML = "";
+        toggleHistoryEmpty(true, "Unable to load inventory history.");
+    }
 }
 
 function formatQty(qty) {
@@ -554,7 +587,7 @@ el("btnSaveEdit").onclick = () => saveEdit().catch((e) => setEditMsg(e.message))
 el("btnImport").onclick = () => importExcel().catch((e) => setMsg(e.message));
 el("btnExport").onclick = () => exportExcel().catch((e) => setMsg(e.message));
 el("btnCloseDetails").onclick = closeDetails;
-el("btnLoadItemHistory").onclick = () => selectedItem && loadItemHistory(selectedItem.id).catch((e) => setMsg(e.message));
+el("btnLoadItemHistory").onclick = () => selectedItem && loadItemHistory(selectedItem.id).catch(() => toggleHistoryEmpty(true, "Unable to load inventory history."));
 el("btnSaveDetailImage").onclick = () => saveDetailImage().catch((e) => setMsg(e.message));
 
 el("username").addEventListener("keydown", function (e) {
@@ -608,4 +641,3 @@ if (menuBtn && sidePanel && dashboard) {
 }
 
 setupAccordions();
-
