@@ -93,8 +93,8 @@ function buildActionDropdown(it) {
 
     const toggleBtn = document.createElement("button");
     toggleBtn.type = "button";
-    toggleBtn.className = "action-toggle secondary";
-    toggleBtn.innerHTML = `Actions <span class="caret-small">⌄</span>`;
+    toggleBtn.className = "three-dots-btn";
+    toggleBtn.innerHTML = "⋮";
 
     const menu = document.createElement("div");
     menu.className = "action-dropdown-menu hidden";
@@ -102,25 +102,45 @@ function buildActionDropdown(it) {
     const historyPanel = document.createElement("div");
     historyPanel.className = "item-history-dropdown hidden";
 
+    historyPanel.addEventListener("click", (e) => e.stopPropagation());
+
     const options = [
+        // 🔹 TOP ACTIONS
+        { label: "Edit", action: () => openEdit(it) },
+        {
+            label: "Delete",
+            action: async () => {
+                if (!confirm(`Delete item ${it.serialNumber}?`)) return;
+                try {
+                    await apiFetch(`/api/items/${it.id}`, { method: "DELETE" });
+                    setMsg("Deleted.");
+                    await loadItems();
+                } catch (e) {
+                    setMsg(e.message);
+                }
+            }
+        },
+
+        // 🔹 EXISTING OPTIONS (UNCHANGED)
         { label: "Delivery Receipt", action: () => openDetailsSection(it, "sectionDeliveryReceipt") },
         { label: "Hardware Revision", action: () => openDetailsSection(it, "sectionHardwareRevision") },
         { label: "Vendor", action: () => openDetailsSection(it, "sectionVendor") },
+
         {
             label: "Inventory History",
             action: async () => {
                 menu.classList.add("hidden");
 
-                const isAlreadyOpen = !historyPanel.classList.contains("hidden");
+                const isOpen = !historyPanel.classList.contains("hidden");
 
-                document.querySelectorAll(".item-history-dropdown").forEach((panel) => {
-                    if (panel !== historyPanel) {
-                        panel.classList.add("hidden");
-                        panel.innerHTML = "";
+                document.querySelectorAll(".item-history-dropdown").forEach((p) => {
+                    if (p !== historyPanel) {
+                        p.classList.add("hidden");
+                        p.innerHTML = "";
                     }
                 });
 
-                if (isAlreadyOpen) {
+                if (isOpen) {
                     historyPanel.classList.add("hidden");
                     historyPanel.innerHTML = "";
                     return;
@@ -137,20 +157,25 @@ function buildActionDropdown(it) {
                 }
             }
         },
+
         { label: "Upload Image", action: () => openDetailsSection(it, "sectionUploadImage") }
     ];
 
+    // 🔹 Build menu items
     options.forEach((opt) => {
         const item = document.createElement("button");
         item.type = "button";
         item.className = "action-dropdown-item";
         item.textContent = opt.label;
-        item.onclick = () => {
+        item.onclick = (e) => {
+            e.stopPropagation();
+            menu.classList.add("hidden");
             opt.action();
         };
         menu.appendChild(item);
     });
 
+    // 🔹 Toggle menu
     toggleBtn.onclick = (e) => {
         e.stopPropagation();
         document.querySelectorAll(".action-dropdown-menu").forEach((m) => {
@@ -159,21 +184,12 @@ function buildActionDropdown(it) {
         menu.classList.toggle("hidden");
     };
 
+    menu.addEventListener("click", (e) => e.stopPropagation());
+
     menuContainer.appendChild(toggleBtn);
     menuContainer.appendChild(menu);
 
     wrapper.appendChild(menuContainer);
-    wrapper.appendChild(rowButton("Edit", "secondary", () => openEdit(it)));
-    wrapper.appendChild(rowButton("Delete", "secondary", async () => {
-        if (!confirm(`Delete item ${it.serialNumber}?`)) return;
-        try {
-            await apiFetch(`/api/items/${it.id}`, { method: "DELETE" });
-            setMsg("Deleted.");
-            await loadItems();
-        } catch (e) {
-            setMsg(e.message);
-        }
-    }));
     wrapper.appendChild(historyPanel);
 
     return wrapper;
@@ -584,3 +600,4 @@ if (menuBtn && sidePanel && dashboard) {
 }
 
 setupAccordions();
+
