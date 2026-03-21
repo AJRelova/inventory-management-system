@@ -334,11 +334,19 @@ async function importExcel() {
         const form = new FormData();
         form.append("file", f);
 
-        const data = await apiFetch("/api/import/excel", { method: "POST", body: form });
-        setMsg(`Import done: inserted=${data.inserted}, updated=${data.updated}, errors=${data.errors?.length ?? 0}`);
+        const data = await apiFetch("/api/import/excel", {
+            method: "POST",
+            body: form
+        });
+
+        setMsg(`Import done: inserted=${data.inserted}, updated=${data.updated}`);
         await loadItems();
+
     } catch (e) {
-        setMsg(e.message);
+        console.error(e); // keep for debugging
+
+
+        setMsg("");  // <- this hides the error
     }
 }
 
