@@ -52,6 +52,38 @@ function rowButton(label, cls, onClick) {
     return btn;
 }
 
+function renderInlineItemHistory(historyList, container) {
+    container.innerHTML = "";
+
+    if (!historyList || historyList.length === 0) {
+        container.innerHTML = `<div class="history-empty">No history found for this item.</div>`;
+        return;
+    }
+
+    historyList.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
+
+    historyList.forEach((h) => {
+        const card = document.createElement("div");
+        card.className = "history-card";
+
+        const receiptHtml = h.receiptImageData
+            ? `<img src="${h.receiptImageData}" alt="Receipt" class="history-thumb">`
+            : `<span class="history-no-image">No receipt</span>`;
+
+        card.innerHTML = `
+            <div class="history-row"><strong>Date:</strong> ${escapeHtml(formatDateTime(h.createdAt))}</div>
+            <div class="history-row"><strong>By:</strong> ${escapeHtml(h.editedBy ?? "-")}</div>
+            <div class="history-row"><strong>Action:</strong> ${escapeHtml(h.action ?? "-")}</div>
+            <div class="history-row"><strong>Qty Change:</strong> ${escapeHtml(formatQty(h.quantityChange))}</div>
+            <div class="history-row"><strong>Notes:</strong> ${escapeHtml(h.notes ?? "-")}</div>
+            <div class="history-row"><strong>Receipt:</strong></div>
+            <div class="history-image-wrap">${receiptHtml}</div>
+        `;
+
+        container.appendChild(card);
+    });
+}
+
 function buildActionDropdown(it) {
     const wrapper = document.createElement("div");
     wrapper.className = "action-menu";
@@ -67,11 +99,44 @@ function buildActionDropdown(it) {
     const menu = document.createElement("div");
     menu.className = "action-dropdown-menu hidden";
 
+    const historyPanel = document.createElement("div");
+    historyPanel.className = "item-history-dropdown hidden";
+
     const options = [
         { label: "Delivery Receipt", action: () => openDetailsSection(it, "sectionDeliveryReceipt") },
         { label: "Hardware Revision", action: () => openDetailsSection(it, "sectionHardwareRevision") },
         { label: "Vendor", action: () => openDetailsSection(it, "sectionVendor") },
-        { label: "Inventory History", action: () => openDetailsSection(it, "sectionHistory") },
+        {
+            label: "Inventory History",
+            action: async () => {
+                menu.classList.add("hidden");
+
+                const isAlreadyOpen = !historyPanel.classList.contains("hidden");
+
+                document.querySelectorAll(".item-history-dropdown").forEach((panel) => {
+                    if (panel !== historyPanel) {
+                        panel.classList.add("hidden");
+                        panel.innerHTML = "";
+                    }
+                });
+
+                if (isAlreadyOpen) {
+                    historyPanel.classList.add("hidden");
+                    historyPanel.innerHTML = "";
+                    return;
+                }
+
+                historyPanel.classList.remove("hidden");
+                historyPanel.innerHTML = `<div class="history-loading">Loading history...</div>`;
+
+                try {
+                    const historyList = await apiFetch(`/api/history/item/${it.id}`, { method: "GET" });
+                    renderInlineItemHistory(historyList, historyPanel);
+                } catch (e) {
+                    historyPanel.innerHTML = `<div class="history-error">${escapeHtml(e.message)}</div>`;
+                }
+            }
+        },
         { label: "Upload Image", action: () => openDetailsSection(it, "sectionUploadImage") }
     ];
 
@@ -81,7 +146,6 @@ function buildActionDropdown(it) {
         item.className = "action-dropdown-item";
         item.textContent = opt.label;
         item.onclick = () => {
-            menu.classList.add("hidden");
             opt.action();
         };
         menu.appendChild(item);
@@ -110,6 +174,7 @@ function buildActionDropdown(it) {
             setMsg(e.message);
         }
     }));
+    wrapper.appendChild(historyPanel);
 
     return wrapper;
 }

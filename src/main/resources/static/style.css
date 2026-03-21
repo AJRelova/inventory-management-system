@@ -195,6 +195,53 @@ tbody tr:hover { background: #f8faff; }
 
 .action-select { min-width: 170px; }
 
+/* INLINE ITEM HISTORY DROPDOWN */
+.item-history-dropdown {
+    width: 100%;
+    margin-top: 10px;
+    padding: 12px;
+    background: #f8faff;
+    border: 1px solid #dfe6f2;
+    border-radius: 12px;
+    display: grid;
+    gap: 12px;
+}
+
+.history-card {
+    background: white;
+    border: 1px solid #e4ebf5;
+    border-radius: 10px;
+    padding: 12px;
+    display: grid;
+    gap: 6px;
+}
+
+.history-row {
+    font-size: 14px;
+    color: #111;
+    line-height: 1.4;
+}
+
+.history-image-wrap {
+    margin-top: 6px;
+}
+
+.history-thumb {
+    width: 120px;
+    max-width: 100%;
+    border-radius: 8px;
+    border: 1px solid #d0d7e2;
+    display: block;
+}
+
+.history-no-image,
+.history-empty,
+.history-loading,
+.history-error {
+    font-size: 14px;
+    color: #555;
+}
+
 /* MODAL */
 .modal {
     position: fixed;
