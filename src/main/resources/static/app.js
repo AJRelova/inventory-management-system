@@ -639,6 +639,9 @@ function applyRoleUI() {
     if (excelFile) {
         excelFile.style.display = canImport() ? "" : "none";
     }
+    if (userRoleDisplay && currentUser) {
+        userRoleDisplay.textContent = `${currentUser.username} (${currentUser.role})`;
+    }
 }
 
 populateSelect("category", CATEGORY_OPTIONS);
