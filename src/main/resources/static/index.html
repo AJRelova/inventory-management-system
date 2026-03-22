@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Nxtgen-Ultegra Inventory Management System</title>
+
+
+    <link rel="icon" type="image/png" href="icon.png">
+
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -26,7 +30,6 @@
     </div>
 </div>
 
-<!-- for burger button -->
 <header class="topbar">
     <button id="menuToggle" class="menu-btn">☰</button>
 
@@ -95,136 +98,7 @@
     </section>
 </main>
 
-<div id="modal" class="modal hidden">
-    <div class="modal-card wide-modal">
-        <h3>Edit Item</h3>
 
-        <div class="grid two-col">
-            <input id="editId" placeholder="ID" disabled />
-            <input id="editSerialNumber" placeholder="Serial Number" />
-            <input id="editDescription" placeholder="Description" />
-            <select id="editCategory"></select>
-            <select id="editLocation"></select>
-            <input id="editQuantity" placeholder="Quantity" type="number" min="0" />
-            <input id="editDeliveryReceipt" placeholder="Delivery Receipt" />
-            <input id="editHardwareRevision" placeholder="Hardware Revision" />
-            <input id="editVendor" placeholder="Vendor" />
-            <input id="editImageFile" type="file" accept="image/*" />
-        </div>
-
-        <div class="row wrap">
-            <button id="btnSaveEdit">Save</button>
-            <button id="btnCancelEdit" class="secondary">Cancel</button>
-            <span id="editMsg" class="muted"></span>
-        </div>
-    </div>
-</div>
-
-<div id="detailsModal" class="modal hidden">
-    <div class="modal-card wide-modal">
-        <div class="row space-between wrap">
-            <h3 id="detailsTitle">Item Details</h3>
-            <button id="btnCloseDetails" class="secondary">Close</button>
-        </div>
-
-        <div class="accordion">
-
-            <div class="accordion-item">
-                <button class="accordion-header" type="button" data-target="sectionDeliveryReceipt">
-                    <span>Delivery Receipt</span>
-                    <span class="caret">⌄</span>
-                </button>
-                <div id="sectionDeliveryReceipt" class="accordion-content hidden">
-                    <div class="detail-box">
-                        <span id="detailDeliveryReceipt"></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <button class="accordion-header" type="button" data-target="sectionHardwareRevision">
-                    <span>Hardware Revision</span>
-                    <span class="caret">⌄</span>
-                </button>
-                <div id="sectionHardwareRevision" class="accordion-content hidden">
-                    <div class="detail-box">
-                        <span id="detailHardwareRevision"></span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <button class="accordion-header" type="button" data-target="sectionVendor">
-                    <span>Vendor</span>
-                    <span class="caret">⌄</span>
-                </button>
-                <div id="sectionVendor" class="accordion-content hidden">
-                    <div class="detail-box">
-                        <span id="detailVendor"></span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- UPDATED INVENTORY HISTORY -->
-            <div class="accordion-item">
-                <button class="accordion-header" type="button" data-target="sectionHistory">
-                    <span>Inventory History</span>
-                    <span class="caret">⌄</span>
-                </button>
-
-                <div id="sectionHistory" class="accordion-content hidden">
-                    <div class="detail-box history-section-box">
-                        <div class="row space-between wrap history-header-row">
-                            <div>
-                                <strong>History Records</strong>
-                                <div class="muted">Latest updates for this selected item</div>
-                            </div>
-                            <button id="btnLoadItemHistory" class="secondary">Refresh This Item History</button>
-                        </div>
-
-                        <div class="history-table-wrapper">
-                            <table class="history-table">
-                                <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Action</th>
-                                    <th>Qty Change</th>
-                                </tr>
-                                </thead>
-                                <tbody id="itemHistoryBody">
-                                <!-- JS inserts rows here -->
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div id="itemHistoryEmpty" class="history-empty hidden">
-                            No inventory history available yet.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="accordion-item">
-                <button class="accordion-header" type="button" data-target="sectionUploadImage">
-                    <span>Upload Image</span>
-                    <span class="caret">⌄</span>
-                </button>
-                <div id="sectionUploadImage" class="accordion-content hidden">
-                    <div class="detail-box">
-                        <input id="detailImageUpload" type="file" accept="image/*" />
-                        <div class="row wrap">
-                            <button id="btnSaveDetailImage">Save Image</button>
-                        </div>
-
-                        <img id="detailImage" class="detail-image hidden" alt="Item image" />
-                        <span id="detailNoImage" class="muted">No image uploaded.</span>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-</div>
 
 <script src="app.js"></script>
 </body>
