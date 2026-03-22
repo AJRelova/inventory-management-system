@@ -1,6 +1,7 @@
 let authHeader = null;
 let allItems = [];
 let selectedItem = null;
+let currentUser = null;
 
 const CATEGORY_OPTIONS = ["Select Category", "Networking", "Laptop", "Smartphone", "Sim ", "Peripherals", "Accessories"];
 const LOCATION_OPTIONS = ["Select Location", "Batangas SH", "Office", "N/A"];
@@ -117,6 +118,7 @@ function buildActionDropdown(it) {
     historyPanel.className = "item-history-dropdown hidden";
 
     historyPanel.addEventListener("click", (e) => e.stopPropagation());
+    menu.addEventListener("click", (e) => e.stopPropagation());
 
     const options = [
         { label: "Edit", action: () => openEdit(it) },
@@ -128,6 +130,7 @@ function buildActionDropdown(it) {
                     await apiFetch(`/api/items/${it.id}`, { method: "DELETE" });
                     setMsg("Deleted.");
                     await loadItems();
+                    await fetchHistory();
                 } catch (e) {
                     setMsg(e.message);
                 }
@@ -136,7 +139,6 @@ function buildActionDropdown(it) {
         { label: "Delivery Receipt", action: () => openDetailsSection(it, "sectionDeliveryReceipt") },
         { label: "Hardware Revision", action: () => openDetailsSection(it, "sectionHardwareRevision") },
         { label: "Vendor", action: () => openDetailsSection(it, "sectionVendor") },
-
         {
             label: "Inventory History",
             action: async () => {
@@ -168,7 +170,6 @@ function buildActionDropdown(it) {
                 }
             }
         },
-
         { label: "Upload Image", action: () => openDetailsSection(it, "sectionUploadImage") }
     ];
 
@@ -177,23 +178,30 @@ function buildActionDropdown(it) {
         item.type = "button";
         item.className = "action-dropdown-item";
         item.textContent = opt.label;
-        item.onclick = (e) => {
+        item.onclick = async (e) => {
             e.stopPropagation();
             menu.classList.add("hidden");
-            opt.action();
+            await opt.action();
         };
         menu.appendChild(item);
     });
 
     toggleBtn.onclick = (e) => {
         e.stopPropagation();
+
         document.querySelectorAll(".action-dropdown-menu").forEach((m) => {
             if (m !== menu) m.classList.add("hidden");
         });
+
+        document.querySelectorAll(".item-history-dropdown").forEach((p) => {
+            if (p !== historyPanel) {
+                p.classList.add("hidden");
+                p.innerHTML = "";
+            }
+        });
+
         menu.classList.toggle("hidden");
     };
-
-    menu.addEventListener("click", (e) => e.stopPropagation());
 
     menuContainer.appendChild(toggleBtn);
     menuContainer.appendChild(menu);
@@ -499,12 +507,13 @@ async function login() {
         }
 
         await apiFetch("/api/items", { method: "GET" });
+        await loadCurrentUser();
 
-        el("authStatus").textContent = "Connected";
-        el("loginModal").style.display = "none";
+        el("authStatus").textContent = `Connected as ${currentUser.username} (${currentUser.role})`;
+        el("loginModal").classList.add("hidden");
 
         await loadItems();
-
+        await fetchHistory();
     } catch (e) {
         el("authStatus").textContent = "Authentication failed";
         setMsg(e.message);
@@ -573,6 +582,65 @@ async function saveDetailImage() {
     await loadItems();
 }
 
+async function loadCurrentUser() {
+    currentUser = await apiFetch("/api/auth/me", { method: "GET" });
+}
+
+function isAdmin() {
+    return currentUser?.role === "ADMIN";
+}
+
+function isStaff() {
+    return currentUser?.role === "STAFF";
+}
+
+function isViewer() {
+    return currentUser?.role === "VIEWER";
+}
+
+function canEdit() {
+    return isAdmin() || isStaff();
+}
+
+function canDelete() {
+    return isAdmin();
+}
+
+function canExport() {
+    return isAdmin() || isStaff();
+}
+
+function canImport() {
+    return isAdmin() || isStaff();
+}
+
+function canAddItem() {
+    return isAdmin() || isStaff();
+}
+
+function applyRoleUI() {
+    const addSection = document.querySelector(".side-panel");
+    const btnExport = el("btnExport");
+    const btnImport = el("btnImport");
+    const excelFile = el("excelFile");
+
+    if (addSection) {
+        addSection.style.display = canAddItem() ? "" : "none";
+    }
+
+    if (btnExport) {
+        btnExport.style.display = canExport() ? "" : "none";
+    }
+
+    if (btnImport) {
+        btnImport.style.display = canImport() ? "" : "none";
+    }
+
+    if (excelFile) {
+        excelFile.style.display = canImport() ? "" : "none";
+    }
+}
+
 populateSelect("category", CATEGORY_OPTIONS);
 populateSelect("location", LOCATION_OPTIONS);
 populateSelect("editCategory", CATEGORY_OPTIONS);
@@ -615,6 +683,20 @@ document.addEventListener("keydown", (e) => {
 document.addEventListener("click", () => {
     document.querySelectorAll(".action-dropdown-menu").forEach((menu) => {
         menu.classList.add("hidden");
+    });
+});
+
+document.addEventListener("click", (e) => {
+    document.querySelectorAll(".action-dropdown").forEach((dropdown) => {
+        if (!dropdown.contains(e.target)) {
+            dropdown.querySelector(".action-dropdown-menu")?.classList.add("hidden");
+        }
+    });
+
+    document.querySelectorAll(".item-history-dropdown").forEach((panel) => {
+        if (!panel.contains(e.target)) {
+            panel.classList.add("hidden");
+        }
     });
 });
 
