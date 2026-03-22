@@ -512,6 +512,8 @@ async function login() {
         el("authStatus").textContent = `Connected as ${currentUser.username} (${currentUser.role})`;
         el("loginModal").classList.add("hidden");
 
+        applyRoleUI()
+        
         await loadItems();
         await fetchHistory();
     } catch (e) {
@@ -623,6 +625,7 @@ function applyRoleUI() {
     const btnExport = el("btnExport");
     const btnImport = el("btnImport");
     const excelFile = el("excelFile");
+    const userRoleDisplay = el("userRoleDiplay");
 
     if (addSection) {
         addSection.style.display = canAddItem() ? "" : "none";
