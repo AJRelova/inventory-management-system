@@ -124,7 +124,7 @@ function buildActionDropdown(it) {
     { label: "Edit", action: () => 
         {
         if (!canEdit()) {
-            setMsg("You are not authorized to edit an item");
+            alert("You are not authorized to edit an item");
             return;
         }
         openEdit(it);
@@ -135,7 +135,7 @@ function buildActionDropdown(it) {
         label: "Delete",
         action: async () => {
             if (!canDelete()) {
-                setMsg("You are not authorized to delete an item");
+                alert("You are not authorized to delete an item");
                 return;
             }
 
