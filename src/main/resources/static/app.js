@@ -121,12 +121,21 @@ function buildActionDropdown(it) {
     menu.addEventListener("click", (e) => e.stopPropagation());
 
     const options = [
-    { label: "Edit", action: () => openEdit(it) },
+    { label: "Edit", action: () => 
+        {
+        if (!canEdit()) {
+            setMsg("You are not authorized to edit an item");
+            return;
+        }
+        openEdit(it);
+    } 
+    
+    },
     {
         label: "Delete",
         action: async () => {
             if (!canDelete()) {
-                alert("You are not authorized to delete an item");
+                setMsg("You are not authorized to delete an item");
                 return;
             }
 
@@ -322,6 +331,11 @@ function closeDetails() {
 }
 
 async function saveEdit() {
+    if (!canEdit()) {
+        setMsg("You are not authorized to edit an item");
+        return;
+    }
+
     const id = el("editId").value;
     const payload = {
         serialNumber: el("editSerialNumber").value.trim(),
