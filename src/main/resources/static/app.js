@@ -150,10 +150,7 @@ function buildActionDropdown(it) {
         { label: "Delivery Receipt", action: () => openDetailsSection(it, "sectionDeliveryReceipt") },
         { label: "Hardware Revision", action: () => openDetailsSection(it, "sectionHardwareRevision") },
         { label: "Vendor", action: () => openDetailsSection(it, "sectionVendor") },
-
-        /* ✅ CHANGED: now opens details modal accordion, not inline row panel */
         { label: "Inventory History", action: () => openDetailsSection(it, "sectionHistory") },
-
         { label: "Upload Image", action: () => openDetailsSection(it, "sectionUploadImage") }
     ];
 
@@ -374,9 +371,22 @@ function renderHistory(historyList, tbody, showItemName = false) {
 
     for (const h of historyList) {
         const tr = document.createElement("tr");
+
         tr.innerHTML = showItemName
-            ? `<td>${escapeHtml(formatDateTime(h.createdAt ?? h.updatedAt ?? h.timestamp ?? h.dateCreated ?? h.created_date))}</td><td>${escapeHtml(h.itemName ?? "")}</td><td>${escapeHtml(h.action ?? "")}</td><td style="font-weight:600;">${formatQty(h.quantityChange)}</td>`
-            : `<td>${escapeHtml(formatDateTime(h.createdAt ?? h.updatedAt ?? h.timestamp ?? h.dateCreated ?? h.created_date))}</td><td>${escapeHtml(h.action ?? "")}</td><td style="font-weight:600;">${formatQty(h.quantityChange)}</td>`;
+            ? `
+                <td>${escapeHtml(formatDateTime(h.createdAt ?? h.updatedAt ?? h.timestamp ?? h.dateCreated ?? h.created_date))}</td>
+                <td>${escapeHtml(h.itemName ?? "")}</td>
+                <td><strong>${escapeHtml(h.editedBy ?? "-")}</strong></td>
+                <td>${escapeHtml(h.action ?? "")}</td>
+                <td style="font-weight:600;">${formatQty(h.quantityChange)}</td>
+              `
+            : `
+                <td>${escapeHtml(formatDateTime(h.createdAt ?? h.updatedAt ?? h.timestamp ?? h.dateCreated ?? h.created_date))}</td>
+                <td><strong>${escapeHtml(h.editedBy ?? "-")}</strong></td>
+                <td>${escapeHtml(h.action ?? "")}</td>
+                <td style="font-weight:600;">${formatQty(h.quantityChange)}</td>
+              `;
+
         tbody.appendChild(tr);
     }
 }
@@ -445,7 +455,7 @@ async function loadItemHistory(itemId) {
     if (tbody) {
         tbody.innerHTML = `
             <tr>
-                <td colspan="3" class="muted">Loading history...</td>
+                <td colspan="4" class="muted">Loading history...</td>
             </tr>
         `;
     }
