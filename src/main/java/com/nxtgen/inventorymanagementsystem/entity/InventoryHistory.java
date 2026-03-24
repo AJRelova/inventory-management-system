@@ -2,7 +2,7 @@ package com.nxtgen.inventorymanagementsystem.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import org.hibernate.annotations.CreationTimestamp;
+import java.time.ZoneId;
 
 @Entity
 @Table(name = "inventory_history")
@@ -34,10 +34,15 @@ public class InventoryHistory {
     @Column(name = "receipt_image", columnDefinition = "LONGTEXT")
     private String receiptImageData;
 
-    /* 🔥 FIXED DATE */
-    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now(ZoneId.of("Asia/Manila"));
+        }
+    }
 
     public InventoryHistory() {}
 
@@ -47,8 +52,6 @@ public class InventoryHistory {
         this.action = action;
         this.quantityChange = quantityChange;
     }
-
-    // ===== GETTERS & SETTERS =====
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -75,4 +78,5 @@ public class InventoryHistory {
     public void setReceiptImageData(String receiptImageData) { this.receiptImageData = receiptImageData; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
