@@ -86,7 +86,7 @@ function renderInlineItemHistory(historyList, container) {
             : `<span class="history-no-image">No receipt</span>`;
 
         card.innerHTML = `
-            <div class="history-row"><strong>Date:</strong> ${escapeHtml(formatDateTime(h.createdAt))}</div>
+            <div class="history-row"><strong>Date:</strong> ${escapeHtml(formatDateTime(h.createdAt ?? h.updatedAt ?? h.timestamp ?? h.dateCreated ?? h.created_date))}</div>
             <div class="history-row"><strong>By:</strong> ${escapeHtml(h.editedBy ?? "-")}</div>
             <div class="history-row"><strong>Action:</strong> ${escapeHtml(h.action ?? "-")}</div>
             <div class="history-row"><strong>Qty Change:</strong> ${escapeHtml(formatQty(h.quantityChange))}</div>
@@ -413,10 +413,9 @@ function renderHistory(historyList, tbody, showItemName = false) {
     historyList.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
 
     for (const h of historyList) {
-        const tr = document.createElement("tr");
         tr.innerHTML = showItemName
-            ? `<td>${escapeHtml(formatDateTime(h.createdAt))}</td><td>${escapeHtml(h.itemName ?? "")}</td><td>${escapeHtml(h.action ?? "")}</td><td style="font-weight:600;">${formatQty(h.quantityChange)}</td>`
-            : `<td>${escapeHtml(formatDateTime(h.createdAt))}</td><td>${escapeHtml(h.action ?? "")}</td><td style="font-weight:600;">${formatQty(h.quantityChange)}</td>`;
+            ? `<td>${escapeHtml(formatDateTime(h.createdAt ?? h.updatedAt ?? h.timestamp ?? h.dateCreated ?? h.created_date))}</td><td>${escapeHtml(h.itemName ?? "")}</td><td>${escapeHtml(h.action ?? "")}</td><td style="font-weight:600;">${formatQty(h.quantityChange)}</td>`
+            : `<td>${escapeHtml(formatDateTime(h.createdAt ?? h.updatedAt ?? h.timestamp ?? h.dateCreated ?? h.created_date))}</td><td>${escapeHtml(h.action ?? "")}</td><td style="font-weight:600;">${formatQty(h.quantityChange)}</td>`;
         tbody.appendChild(tr);
     }
 }
@@ -504,11 +503,62 @@ function formatQty(qty) {
 }
 
 function formatDateTime(value) {
-    if (!value) return "-";
+    if (value === null || value === undefined || value === "") return "-";
 
     try {
-        const fixed = typeof value === "string" ? value.replace(" ", "T") : value;
-        const d = new Date(fixed);
+        if (Array.isArray(value)) {
+            const year = Number(value[0]);
+            const month = Number(value[1]) - 1;
+            const day = Number(value[2]);
+            const hour = Number(value[3] || 0);
+            const minute = Number(value[4] || 0);
+            const second = Number(value[5] || 0);
+
+            const d = new Date(year, month, day, hour, minute, second);
+
+            if (!isNaN(d.getTime())) {
+                return d.toLocaleString("en-PH", {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                });
+            }
+        }
+
+        if (typeof value === "string") {
+            const fixed = value.replace(" ", "T");
+            const d = new Date(fixed);
+
+            if (!isNaN(d.getTime())) {
+                return d.toLocaleString("en-PH", {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                });
+            }
+
+            return value;
+        }
+
+        if (typeof value === "number") {
+            const d = new Date(value);
+
+            if (!isNaN(d.getTime())) {
+                return d.toLocaleString("en-PH", {
+                    year: "numeric",
+                    month: "short",
+                    day: "2-digit",
+                    hour: "2-digit",
+                    minute: "2-digit"
+                });
+            }
+        }
+
+        const d = new Date(value);
 
         if (!isNaN(d.getTime())) {
             return d.toLocaleString("en-PH", {
