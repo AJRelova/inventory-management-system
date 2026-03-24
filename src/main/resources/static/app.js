@@ -114,22 +114,18 @@ function buildActionDropdown(it) {
     const menu = document.createElement("div");
     menu.className = "action-dropdown-menu hidden";
 
-    const historyPanel = document.createElement("div");
-    historyPanel.className = "item-history-dropdown hidden";
-
-    historyPanel.addEventListener("click", (e) => e.stopPropagation());
     menu.addEventListener("click", (e) => e.stopPropagation());
 
     const options = [
-        { label: "Edit", action: () =>
-            {
+        {
+            label: "Edit",
+            action: () => {
                 if (!canEdit()) {
                     alert("You are not authorized to edit an item");
                     return;
                 }
                 openEdit(it);
             }
-
         },
         {
             label: "Delete",
@@ -154,37 +150,10 @@ function buildActionDropdown(it) {
         { label: "Delivery Receipt", action: () => openDetailsSection(it, "sectionDeliveryReceipt") },
         { label: "Hardware Revision", action: () => openDetailsSection(it, "sectionHardwareRevision") },
         { label: "Vendor", action: () => openDetailsSection(it, "sectionVendor") },
-        {
-            label: "Inventory History",
-            action: async () => {
-                menu.classList.add("hidden");
 
-                const isOpen = !historyPanel.classList.contains("hidden");
+        /* ✅ CHANGED: now opens details modal accordion, not inline row panel */
+        { label: "Inventory History", action: () => openDetailsSection(it, "sectionHistory") },
 
-                document.querySelectorAll(".item-history-dropdown").forEach((p) => {
-                    if (p !== historyPanel) {
-                        p.classList.add("hidden");
-                        p.innerHTML = "";
-                    }
-                });
-
-                if (isOpen) {
-                    historyPanel.classList.add("hidden");
-                    historyPanel.innerHTML = "";
-                    return;
-                }
-
-                historyPanel.classList.remove("hidden");
-                historyPanel.innerHTML = `<div class="history-loading">Loading history...</div>`;
-
-                try {
-                    const historyList = await apiFetch(`/api/history/item/${it.id}`, { method: "GET" });
-                    renderInlineItemHistory(historyList, historyPanel);
-                } catch (e) {
-                    historyPanel.innerHTML = `<div class="history-empty">Unable to load history right now.</div>`;
-                }
-            }
-        },
         { label: "Upload Image", action: () => openDetailsSection(it, "sectionUploadImage") }
     ];
 
@@ -208,21 +177,12 @@ function buildActionDropdown(it) {
             if (m !== menu) m.classList.add("hidden");
         });
 
-        document.querySelectorAll(".item-history-dropdown").forEach((p) => {
-            if (p !== historyPanel) {
-                p.classList.add("hidden");
-                p.innerHTML = "";
-            }
-        });
-
         menu.classList.toggle("hidden");
     };
 
     menuContainer.appendChild(toggleBtn);
     menuContainer.appendChild(menu);
-
     wrapper.appendChild(menuContainer);
-    wrapper.appendChild(historyPanel);
 
     return wrapper;
 }
@@ -413,6 +373,7 @@ function renderHistory(historyList, tbody, showItemName = false) {
     historyList.sort((a, b) => (b.id ?? 0) - (a.id ?? 0));
 
     for (const h of historyList) {
+        const tr = document.createElement("tr");
         tr.innerHTML = showItemName
             ? `<td>${escapeHtml(formatDateTime(h.createdAt ?? h.updatedAt ?? h.timestamp ?? h.dateCreated ?? h.created_date))}</td><td>${escapeHtml(h.itemName ?? "")}</td><td>${escapeHtml(h.action ?? "")}</td><td style="font-weight:600;">${formatQty(h.quantityChange)}</td>`
             : `<td>${escapeHtml(formatDateTime(h.createdAt ?? h.updatedAt ?? h.timestamp ?? h.dateCreated ?? h.created_date))}</td><td>${escapeHtml(h.action ?? "")}</td><td style="font-weight:600;">${formatQty(h.quantityChange)}</td>`;
@@ -600,7 +561,7 @@ async function login() {
         el("authStatus").textContent = `Connected as ${currentUser.username} (${currentUser.role})`;
         el("loginModal").classList.add("hidden");
 
-        applyRoleUI()
+        applyRoleUI();
 
         await loadItems();
         await fetchHistory();
@@ -674,7 +635,10 @@ async function saveDetailImage() {
 
 async function fetchHistory() {
     const historyList = await apiFetch("/api/history", { method: "GET" });
-    renderHistory(historyList, el("historyBody"), true);
+    const historyBody = el("historyBody");
+    if (historyBody) {
+        renderHistory(historyList, historyBody, true);
+    }
 }
 
 async function loadCurrentUser() {
@@ -735,6 +699,7 @@ function applyRoleUI() {
     if (excelFile) {
         excelFile.style.display = canImport() ? "" : "none";
     }
+
     if (userRoleDisplay && currentUser) {
         userRoleDisplay.textContent = `${currentUser.username} (${currentUser.role})`;
     }
@@ -783,12 +748,6 @@ document.addEventListener("click", (e) => {
     document.querySelectorAll(".action-dropdown").forEach((dropdown) => {
         if (!dropdown.contains(e.target)) {
             dropdown.querySelector(".action-dropdown-menu")?.classList.add("hidden");
-        }
-    });
-
-    document.querySelectorAll(".item-history-dropdown").forEach((panel) => {
-        if (!panel.contains(e.target)) {
-            panel.classList.add("hidden");
         }
     });
 });
