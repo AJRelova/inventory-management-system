@@ -119,6 +119,7 @@ body {
 .content-panel {
     display: grid;
     gap: 16px;
+    overflow: visible;
 }
 
 /* CARDS */
@@ -127,6 +128,7 @@ body {
     padding: 16px;
     border-radius: 14px;
     box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    overflow: visible;
 }
 
 h2, h3 {
@@ -215,6 +217,8 @@ button:hover {
 /* TABLE */
 .table-wrap {
     overflow-x: auto;
+    overflow-y: visible;
+    position: relative;
 }
 
 table {
@@ -411,14 +415,14 @@ tbody tr:hover {
 .action-dropdown-menu {
     position: absolute;
     top: calc(100% + 6px);
-    left: 0;
+    right: 0;
     min-width: 220px;
     background: #fff;
     border: 1px solid #dfe6f2;
     border-radius: 12px;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.08);
     padding: 6px;
-    z-index: 30;
+    z-index: 9999;
 }
 
 .action-dropdown-menu.hidden {
