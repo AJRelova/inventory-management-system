@@ -9,9 +9,12 @@ Procedures on how to operate the project:
 1. The website can be opened at https://inventory.ultegen.com/ 
 2. Wait for 1-3 minutes for the website to be active again. (Render has downtime limitations for free subscriptions) 
 3. Login either as Admin, Staff, or Viewer. 
-  Login Details: 
-  User: admin         User: staff        User: viewer
-  Pw: admin123        Pw: staff123       Pw: viewer123
+
+Login Details: 
+
+User: admin         User: staff        User: viewer
+
+Pw: admin123        Pw: staff123       Pw: viewer123
 5. As admin, you can add, edit, and delete items.
    As staff, you can do everything that the admin can do except delete.
    As viewer, you are not authorized to add, edit, or delete. You can only view the inventory. 
