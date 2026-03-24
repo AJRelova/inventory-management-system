@@ -15,7 +15,7 @@ Procedures on how to operate the project:
 6. All roles can view the item details of each inventory item. Additionally, they can use the search bar at the top right to search for specific items.
 7. Importing and Exporting an Excel file takes approximately 5-10 mins. Note: Only the admin and staff can import and export files.
 
-Login Details: 
+8. Login Details
 User: admin         
 Pw: admin123
 User: staff         
