@@ -16,5 +16,6 @@ Procedures on how to operate the project:
 7. Importing and Exporting an Excel file takes approximately 5-10 mins. Note: Only the admin and staff can import and export files.
 
 Login Details: 
-User: admin         User: staff        User: viewer
-Pw: admin123        Pw: staff123       Pw: viewer123
+User: admin         Pw: admin123
+User: staff         Pw: staff123 
+User: viewer        Pw: viewer123
