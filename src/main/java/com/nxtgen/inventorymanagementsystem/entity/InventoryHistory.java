@@ -2,6 +2,7 @@ package com.nxtgen.inventorymanagementsystem.entity;
 
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity
 @Table(name = "inventory_history")
@@ -23,20 +24,19 @@ public class InventoryHistory {
     @Column(name = "quantity_change")
     private Integer quantityChange;
 
-    // 🔥 NEW: WHO DID IT
     @Column(name = "edited_by")
     private String editedBy;
 
-    // 🔥 NEW: NOTES / DESCRIPTION
     @Column(name = "notes")
     private String notes;
 
-    // 🔥 NEW: RECEIPT IMAGE (Base64)
     @Lob
     @Column(name = "receipt_image", columnDefinition = "LONGTEXT")
     private String receiptImageData;
 
-    @Column(name = "created_at", insertable = false, updatable = false)
+    /* 🔥 FIXED DATE */
+    @CreationTimestamp
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     public InventoryHistory() {}
@@ -75,5 +75,4 @@ public class InventoryHistory {
     public void setReceiptImageData(String receiptImageData) { this.receiptImageData = receiptImageData; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
