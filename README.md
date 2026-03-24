@@ -12,7 +12,7 @@ Procedures on how to operate the project:
   Login Details: 
   User: admin         User: staff        User: viewer
   Pw: admin123        Pw: staff123       Pw: viewer123
-4. As admin, you can add, edit, and delete items.
+5. As admin, you can add, edit, and delete items.
    As staff, you can do everything that the admin can do except delete.
    As viewer, you are not authorized to add, edit, or delete. You can only view the inventory. 
 6. All roles can view the item details of each inventory item. Additionally, they can use the search bar at the top right to search for specific items.
